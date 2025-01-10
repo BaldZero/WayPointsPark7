@@ -64,7 +64,7 @@ public class Graph
             Node thisNode = open[i];
             if (thisNode.getId() == endId)
             {
-                //ReconstructPath(start, end)
+                ReconstructPath(start, end);
                 return true;
             }
 
@@ -79,18 +79,43 @@ public class Graph
                     continue;
                 }
                 tentative_g_score = thisNode.g + distance(thisNode, neighbor);
-                if(open.IndexOf(neighbor) == 1)
+                if(open.IndexOf(neighbor) == -1)
                 {
                     open.Add(neighbor);
-                        tentative_is_better = true;
+                    tentative_is_better = true;
                 }
-
+                else if(tentative_g_score < neighbor.g)
+                {
+                    tentative_is_better = true;
+                }
+                else
+                {
+                    tentative_is_better = false;
+                }
+                if (tentative_is_better)
+                {
+                    neighbor.cameFrom = thisNode;
+                    neighbor.g = tentative_g_score;
+                    neighbor.h = distance(thisNode, end);
+                    neighbor.f = neighbor.g + neighbor.h;
+                }
             }
-
-
-
         }
+        return false;
+    }
 
+    public void ReconstructPath(Node startId, Node endId)
+    {
+        pathList.Clear();
+        pathList.Add(endId);
+
+        var p = endId.cameFrom;
+        while(p != startId && p != null)
+        {
+            pathList.Insert(0, p);
+            p = p.cameFrom;
+        }
+        pathList.Insert(0, startId);
     }
 
     float distance(Node a, Node b)
